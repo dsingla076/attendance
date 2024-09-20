@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Task</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="date"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007BFF;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Attendance Marking</h1>
+        
+        <form id="attendanceForm">
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date" required>
+
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="roll">Roll No:</label>
+            <input type="text" id="roll" name="roll" required>
+
+            <label for="attendance">Attendance:</label>
+            <select id="attendance" name="attendance" required>
+                <option value="">Select Attendance</option>
+                <option value="Present">Present</option>
+                <option value="Absent">Absent</option>
+                <option value="Leave">Leave</option>
+            </select>
+
+            <button type="submit">Submit</button>
+        </form>
+        
+        <h2>Attendance Records</h2>
+        <table id="attendanceTable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Roll No</th>
+                    <th>Attendance</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Table rows will be added here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // Load and display existing records from localStorage on page load
+        window.onload = function() {
+            displayRecords();
+        };
+
+        // Handle form submission
+        document.getElementById('attendanceForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Collect form data
+            const date = document.getElementById('date').value;
+            const name = document.getElementById('name').value;
+            const roll = document.getElementById('roll').value;
+            const attendance = document.getElementById('attendance').value;
+
+            // Create a record object
+            const record = {
+                date: date,
+                name: name,
+                roll: roll,
+                attendance: attendance
+            };
+
+            // Retrieve existing records from localStorage or initialize an empty array
+            let records = JSON.parse(localStorage.getItem('attendanceRecords')) || [];
+
+            // Add new record to the array
+            records.push(record);
+
+            // Save updated array to localStorage
+            localStorage.setItem('attendanceRecords', JSON.stringify(records));
+
+            // Display updated records
+            displayRecords();
+
+            // Clear form inputs
+            document.getElementById('attendanceForm').reset();
+        });
+
+        // Function to display records in the table
+        function displayRecords() {
+            const tableBody = document.querySelector('#attendanceTable tbody');
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            // Retrieve records from localStorage
+            let records = JSON.parse(localStorage.getItem('attendanceRecords')) || [];
+
+            // Append rows to the table
+            records.forEach(record => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record.date}</td>
+                    <td>${record.name}</td>
+                    <td>${record.roll}</td>
+                    <td>${record.attendance}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Initialize the date picker for the date input field
+        flatpickr("#date", {
+            dateFormat: "Y-m-d"
+        });
+    </script>
+</body>
+</html>
